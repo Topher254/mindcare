@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import user1 from '../../assets/user.png'
+import user1 from '../../assets/user.png';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
@@ -12,6 +12,7 @@ const Chatbot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [chatTime, setChatTime] = useState(0);
   const [showPaymentPrompt, setShowPaymentPrompt] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [user] = useState({
     name: "Alex Johnson",
     status: "Premium Member",
@@ -20,6 +21,11 @@ const Chatbot = () => {
   });
   const messagesEndRef = useRef(null);
   const timerRef = useRef(null);
+
+  // Toggle sidebar on mobile
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   // Scroll to bottom of chat
   const scrollToBottom = () => {
@@ -195,9 +201,23 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="flex h-screen mb-10 bg-gray-100">
+    <div className="flex flex-col lg:flex-row h-screen bg-gray-100">
+      {/* Mobile Sidebar Toggle */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b">
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 rounded-md text-gray-700 hover:bg-gray-100"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <h2 className="text-lg font-semibold">MindCare Chat</h2>
+        <div className="w-6"></div> {/* Spacer for balance */}
+      </div>
+
       {/* Left Sidebar - User Dashboard */}
-      <div className="w-1/4 bg-white border-r border-gray-200 flex flex-col">
+      <div className={`${isSidebarOpen ? 'block' : 'hidden'} lg:block w-full lg:w-1/4 bg-white border-r border-gray-200 flex flex-col overflow-y-auto`}>
         {/* User Profile */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -219,16 +239,62 @@ const Chatbot = () => {
             <span className="text-sm text-gray-600">Session Time:</span>
             <span className="font-mono text-lg font-semibold text-blue-600">{formatTime(chatTime)}</span>
           </div>
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-600 h-2 rounded-full" 
+              style={{ width: `${Math.min(100, (chatTime / 180) * 100)}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="p-4 border-b border-gray-200">
+          <h4 className="font-medium text-gray-900 mb-3">Quick Actions</h4>
+          <div className="grid grid-cols-2 gap-2">
+            <button className="bg-blue-100 text-blue-700 p-3 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors">
+              Mood Check
+            </button>
+            <button className="bg-green-100 text-green-700 p-3 rounded-lg text-sm font-medium hover:bg-green-200 transition-colors">
+              Exercises
+            </button>
+            <button className="bg-purple-100 text-purple-700 p-3 rounded-lg text-sm font-medium hover:bg-purple-200 transition-colors">
+              Journal
+            </button>
+            <button className="bg-yellow-100 text-yellow-700 p-3 rounded-lg text-sm font-medium hover:bg-yellow-200 transition-colors">
+              Resources
+            </button>
+          </div>
         </div>
 
         {/* Resources */}
         <div className="p-4 border-b border-gray-200">
           <h4 className="font-medium text-gray-900 mb-2">Quick Resources</h4>
           <ul className="space-y-2">
-            <li className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">Breathing Exercises</li>
-            <li className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">Mood Tracker</li>
-            <li className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">Therapist Directory</li>
-            <li className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer">Emergency Contacts</li>
+            <li className="flex items-center text-sm text-blue-600 hover:text-blue-800 cursor-pointer p-2 hover:bg-blue-50 rounded">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Breathing Exercises
+            </li>
+            <li className="flex items-center text-sm text-blue-600 hover:text-blue-800 cursor-pointer p-2 hover:bg-blue-50 rounded">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Mood Tracker
+            </li>
+            <li className="flex items-center text-sm text-blue-600 hover:text-blue-800 cursor-pointer p-2 hover:bg-blue-50 rounded">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              Therapist Directory
+            </li>
+            <li className="flex items-center text-sm text-blue-600 hover:text-blue-800 cursor-pointer p-2 hover:bg-blue-50 rounded">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+              Emergency Contacts
+            </li>
           </ul>
         </div>
 
@@ -252,11 +318,11 @@ const Chatbot = () => {
           </div>
         )}
 
-        {/* Upcoming Sessions */}
+        {/* Wellness Tips */}
         <div className="p-4 border-b border-gray-200">
-          <h4 className="font-medium text-gray-900 mb-2">Upcoming Sessions</h4>
-          <div className="text-sm text-gray-600">
-            <p>No upcoming sessions</p>
+          <h4 className="font-medium text-gray-900 mb-2">Today's Wellness Tip</h4>
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-gray-700">Practice gratitude by writing down three things you're thankful for today. This simple exercise can boost your mood and overall well-being.</p>
           </div>
         </div>
 
@@ -289,10 +355,10 @@ const Chatbot = () => {
       {/* Right Side - Chat Interface */}
       <div className="flex-1 flex flex-col">
         {/* Chat header */}
-        <div className="bg-pink-400  p-4 text-white">
+        <div className="bg-pink-500 p-4 text-white">
           <div className="flex items-center">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3">
-             <img src={user1} alt='image' className='rounded-full'/>
+              <img src={user1} alt='MindCare Bot' className='rounded-full w-8 h-8'/>
             </div>
             <div>
               <h2 className="font-bold text-lg">MindCare Bot</h2>
@@ -305,7 +371,7 @@ const Chatbot = () => {
         <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
           {messages.map((message, index) => (
             <div key={index} className={`flex mb-4 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs md:max-w-md lg:max-w-lg rounded-lg p-3 ${message.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}>
+              <div className={`max-w-xs md:max-w-md lg:max-w-lg rounded-lg p-3 ${message.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-white border border-gray-200 shadow-sm'}`}>
                 <div dangerouslySetInnerHTML={formatMessage(message.text)} />
               </div>
             </div>
@@ -313,7 +379,7 @@ const Chatbot = () => {
           
           {isTyping && (
             <div className="flex mb-4 justify-start">
-              <div className="bg-gray-200 text-gray-800 rounded-lg p-3">
+              <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                 <div className="flex space-x-2">
                   <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
@@ -348,15 +414,17 @@ const Chatbot = () => {
               onChange={(e) => setInputText(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Type your message here..."
-              className="flex-1 border border-gray-300 rounded-l-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="flex-1 border border-gray-300 rounded-l-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
               disabled={showPaymentPrompt}
             />
             <button
               onClick={handleSendMessage}
               disabled={inputText.trim() === '' || showPaymentPrompt}
-              className="bg-blue-500 text-white rounded-r-lg px-4 py-2 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-pink-500 text-white rounded-r-lg px-4 py-2 hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Send
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+              </svg>
             </button>
           </div>
         </div>
