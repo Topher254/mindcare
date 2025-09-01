@@ -30,7 +30,6 @@ Authentication: JWT for secure login and session management
 
 AI Integration: Gemini API (for chatbot conversations and assessments)
 
-Deployment: Dockerized backend, deployable to AWS/GCP/Azure
 
 Security: Input validation, rate limiting, encrypted storage of sensitive data
 
@@ -226,26 +225,6 @@ http://localhost:5000
 
 ---
 
-## 🚀 Deployment
-
-### With Gunicorn & Nginx (Linux server)
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
-```
-
-* Use **Nginx** as a reverse proxy for SSL/TLS.
-* Configure `.env` with production database + secure cookie settings.
-
-### With Docker
-
-```bash
-docker build -t mindcare-backend .
-docker run -p 5000:5000 mindcare-backend
-```
-
----
 
 ## 🌍 Future Enhancements
 
