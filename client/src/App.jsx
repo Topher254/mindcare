@@ -8,10 +8,13 @@ import Footer from './Components/Footer/Footer'
 import Chatbot from './Pages/Chatbot/Chatbot'
 import Experts from './Pages/Experts/Experts'
 import Pricing from './Pages/Pricing/Pricing'
-import Login from './Pages/Auth/Login'
+import { AuthProvider } from './contexts/AuthContext'
+import AssessmentQuiz from './Pages/Assessment/AssessmentQuiz'
 
 const App = () => {
   return (
+<AuthProvider>
+
     <Router>
       <div className="flex flex-col min-h-screen">
         {/* Navbar */}
@@ -23,6 +26,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/experts" element={<Experts />} />
+            <Route path="/assessment" element={<AssessmentQuiz />} />
             <Route path="/pricing" element={<Pricing />} />
             {/* <Route path="/login" element={<Login />} /> */}
           </Routes>
@@ -32,6 +36,7 @@ const App = () => {
         <Footer />
       </div>
     </Router>
+    </AuthProvider>
   )
 }
 

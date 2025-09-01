@@ -1,19 +1,29 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LoginModal from '../../Pages/Auth/LoginModal';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // State for modal visibility
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { user, logout } = useAuth();
+
+  const handleLoginSuccess = () => {
+    setIsLoginModalOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <nav className="sticky top-0 z-50 px-6 py-4 bg-gradient-to-br from-gray-50 to-pink-50 ">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <div className="text-2xl font-bold text-gray-900">
+          <Link to="/" className="text-2xl font-bold text-gray-900">
             M<span className="text-sm">ind Care.</span>
-          </div>
+          </Link>
         </div>
 
         {/* Desktop Navigation Links */}
@@ -26,6 +36,10 @@ const Navbar = () => {
             Chatbot
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-500 transition-all group-hover:w-full"></span>
           </Link>
+          <Link to="/assessment" className="text-gray-600 hover:text-gray-900 transition-colors py-2 px-1 relative group">
+           Assessment
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-500 transition-all group-hover:w-full"></span>
+          </Link>
           <Link to="/experts" className="text-gray-600 hover:text-gray-900 transition-colors py-2 px-1 relative group">
             Experts
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-500 transition-all group-hover:w-full"></span>
@@ -34,13 +48,26 @@ const Navbar = () => {
             Pricing
             <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-pink-500 transition-all group-hover:w-full"></span>
           </Link>
-          {/* Replace Link with button to open modal */}
-          <button 
-            onClick={() => setIsLoginModalOpen(true)}
-            className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition-colors shadow-md"
-          >
-            Login
-          </button>
+          
+          {/* Conditional rendering based on auth state */}
+          {user ? (
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-700">Hello, {user.username}</span>
+              <button 
+                onClick={handleLogout}
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-300 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setIsLoginModalOpen(true)}
+              className="bg-pink-500 text-white px-6 py-2 rounded-full hover:bg-pink-600 transition-colors shadow-md"
+            >
+              Login
+            </button>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -89,22 +116,45 @@ const Navbar = () => {
               Experts
             </Link>
             <Link 
+              to="/assessment" 
+              className="text-gray-600 hover:text-gray-900 transition-colors py-2 px-4 rounded hover:bg-pink-50"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Assessment
+            </Link>
+            <Link 
               to="/pricing" 
               className="text-gray-600 hover:text-gray-900 transition-colors py-2 px-4 rounded hover:bg-pink-50"
               onClick={() => setIsMenuOpen(false)}
             >
               Pricing
             </Link>
-            {/* Replace Link with button to open modal in mobile menu */}
-            <button 
-              onClick={() => {
-                setIsLoginModalOpen(true);
-                setIsMenuOpen(false);
-              }}
-              className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors text-center mt-2"
-            >
-              Login
-            </button>
+            
+            {/* Conditional rendering for mobile */}
+            {user ? (
+              <>
+                <div className="text-gray-700 py-2 px-4">Hello, {user.username}</div>
+                <button 
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-center"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button 
+                onClick={() => {
+                  setIsLoginModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors text-center mt-2"
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -112,7 +162,8 @@ const Navbar = () => {
       {/* Login Modal */}
       <LoginModal 
         isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
       />
     </nav>
   );

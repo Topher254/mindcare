@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import { Facebook, Linkedin, Twitter, Instagram } from 'lucide-react';
+import { toast } from "react-toastify";
+
 
 const Footer = () => {
   const [email, setEmail] = useState('');
-
+  
   const handleSubscribe = () => {
     // Handle subscription logic here
-    console.log('Subscribed with email:', email);
-    setEmail('');
+    console.log("Subscribed with email:", email);
+  
+    // show success toast
+    toast.success("Subscribed successfully 🎉");
+  
+    setEmail("");
   };
-
   return (
     <footer className="bg-gradient-to-br from-pink-500 to-pink-600 text-white py-16">
       <div className="max-w-6xl mx-auto px-6">

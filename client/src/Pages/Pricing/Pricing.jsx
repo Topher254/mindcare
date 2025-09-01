@@ -1,20 +1,124 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState('premium');
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [activeFAQ, setActiveFAQ] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Configure axios to include credentials with all requests
+  axios.defaults.withCredentials = true;
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('http://localhost:5000/api/auth/check');
+        if (response.data.authenticated) {
+          setUser(response.data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
 
   const toggleFAQ = (index) => {
     setActiveFAQ(activeFAQ === index ? null : index);
   };
 
-  // Pricing plans
+  const handlePayment = async (plan, price) => {
+    if (!user) {
+      alert('Please log in first to subscribe to a plan');
+      // Redirect to login page or show login modal
+      return;
+    }
+    
+    setSelectedPlan(plan);
+    setShowPaymentModal(true);
+  };
+
+  const processPayment = async () => {
+    if (!phoneNumber.startsWith('254')) {
+      alert('Please enter a valid Kenyan phone number starting with 254');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // Calculate amount based on plan and billing cycle
+      const amount = billingCycle === 'monthly' 
+        ? (selectedPlan === 'basic' ? 9.99 : selectedPlan === 'premium' ? 29.99 : 79.99)
+        : (selectedPlan === 'basic' ? 99.99 : selectedPlan === 'premium' ? 299.99 : 799.99);
+
+      // Call backend to initiate payment
+      const response = await axios.post('http://localhost:5000/api/payment/mpesa', {
+        phoneNumber,
+        amount,
+        plan: selectedPlan,
+        billingCycle
+      });
+
+      if (response.data.success) {
+        setPaymentStatus('pending');
+        // Poll for payment status
+        checkPaymentStatus(response.data.checkoutRequestId);
+      } else {
+        setPaymentStatus('failed');
+        alert('Payment initiation failed: ' + response.data.message);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      setPaymentStatus('failed');
+      alert('An error occurred during payment processing');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const checkPaymentStatus = async (checkoutRequestId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/payment/status/${checkoutRequestId}`
+      );
+      
+      if (response.data.status === 'Paid') {
+        setPaymentStatus('success');
+        // Update user subscription status
+        const userResponse = await axios.get('http://localhost:5000/api/auth/check');
+        setUser(userResponse.data.user);
+      } else if (response.data.status === 'Failed') {
+        setPaymentStatus('failed');
+      } else {
+        // Keep checking if still pending
+        setTimeout(() => checkPaymentStatus(checkoutRequestId), 3000);
+      }
+    } catch (error) {
+      console.error('Status check error:', error);
+    }
+  };
+
+
+  // Pricing plans (same as before)
   const plans = {
     monthly: [
       {
         name: "Basic",
-        price: "Kshs9.99",
+        price: "Kshs999.99",
         period: "per month",
         description: "Essential mental health support for everyday needs",
         features: [
@@ -29,7 +133,7 @@ const Pricing = () => {
       },
       {
         name: "Premium",
-        price: "Kshs29.99",
+        price: "Kshs1999.99",
         period: "per month",
         description: "Comprehensive support with expert access",
         features: [
@@ -45,7 +149,7 @@ const Pricing = () => {
       },
       {
         name: "Professional",
-        price: "Kshs79.99",
+        price: "Kshs2499.99",
         period: "per month",
         description: "Complete mental wellness package",
         features: [
@@ -116,7 +220,7 @@ const Pricing = () => {
     ]
   };
 
-  // Value propositions
+  // Value propositions (same as before)
   const valueProps = [
     {
       icon: "💪",
@@ -140,7 +244,7 @@ const Pricing = () => {
     }
   ];
 
-  // FAQ items
+  // FAQ items (same as before)
   const faqItems = [
     {
       question: "How do I know which plan is right for me?",
@@ -185,20 +289,18 @@ const Pricing = () => {
           </p>
         </div>
 
-        
-
         {/* Billing Toggle */}
         <div className="flex justify-center mb-12">
           <div className="bg-white rounded-full p-1 shadow-sm inline-flex">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-6 py-2 rounded-full Kshs{billingCycle === 'monthly' ? 'bg-pink-500 text-white' : 'text-gray-700'}`}
+              className={`px-6 py-2 rounded-full ${billingCycle === 'monthly' ? 'bg-pink-500 text-white' : 'text-gray-700'}`}
             >
               Monthly Billing
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
-              className={`px-6 py-2 rounded-full Kshs{billingCycle === 'yearly' ? 'bg-pink-500 text-white' : 'text-gray-700'}`}
+              className={`px-6 py-2 rounded-full ${billingCycle === 'yearly' ? 'bg-pink-500 text-white' : 'text-gray-700'}`}
             >
               Yearly Billing
               <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Save 17%</span>
@@ -211,7 +313,7 @@ const Pricing = () => {
           {plans[billingCycle].map((plan, index) => (
             <div 
               key={index} 
-              className={`relative rounded-2xl p-8 Kshs{plan.popular ? 'border-2 border-pink-500 bg-white shadow-xl' : 'bg-white border border-gray-200 shadow-md'}`}
+              className={`relative rounded-2xl p-8 ${plan.popular ? 'border-2 border-pink-500 bg-white shadow-xl' : 'bg-white border border-gray-200 shadow-md'}`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -249,8 +351,8 @@ const Pricing = () => {
               </ul>
               
               <button
-                onClick={() => setSelectedPlan(plan.name.toLowerCase())}
-                className={`w-full py-3 rounded-lg font-semibold Kshs{
+                onClick={() => handlePayment(plan.name.toLowerCase(), plan.price)}
+                className={`w-full py-3 rounded-lg font-semibold ${
                   plan.popular 
                     ? 'bg-pink-500 text-white hover:bg-pink-600' 
                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
@@ -261,6 +363,90 @@ const Pricing = () => {
             </div>
           ))}
         </div>
+
+        {/* Payment Modal */}
+        {showPaymentModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-xl font-bold mb-4">Complete Your Subscription</h3>
+              
+              {paymentStatus === null && (
+                <>
+                  <p className="mb-4">You're subscribing to the <strong>{selectedPlan}</strong> plan ({billingCycle}).</p>
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      M-Pesa Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="254712345678"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Enter your M-Pesa number in the format 254712345678</p>
+                  </div>
+                  
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      onClick={() => setShowPaymentModal(false)}
+                      className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={processPayment}
+                      disabled={isProcessing || phoneNumber.length < 12}
+                      className="px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 disabled:opacity-50"
+                    >
+                      {isProcessing ? 'Processing...' : 'Pay Now'}
+                    </button>
+                  </div>
+                </>
+              )}
+              
+              {paymentStatus === 'pending' && (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+                  <p>Waiting for you to complete the M-Pesa payment on your phone...</p>
+                </div>
+              )}
+              
+              {paymentStatus === 'success' && (
+                <div className="text-center py-4">
+                  <svg className="h-12 w-12 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <p className="text-lg font-medium mb-2">Payment Successful!</p>
+                  <p>Your {selectedPlan} subscription is now active.</p>
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="mt-4 px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600"
+                  >
+                    Continue to MindCare
+                  </button>
+                </div>
+              )}
+              
+              {paymentStatus === 'failed' && (
+                <div className="text-center py-4">
+                  <svg className="h-12 w-12 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <p className="text-lg font-medium mb-2">Payment Failed</p>
+                  <p>Please try again or contact support if the problem persists.</p>
+                  <button
+                    onClick={() => setPaymentStatus(null)}
+                    className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* FAQ Section */}
         <div className="bg-white rounded-2xl p-8 shadow-sm mb-16">
@@ -275,7 +461,7 @@ const Pricing = () => {
                 >
                   <span>{item.question}</span>
                   <svg 
-                    className={`h-5 w-5 transform Kshs{activeFAQ === index ? 'rotate-180' : ''} transition-transform`} 
+                    className={`h-5 w-5 transform ${activeFAQ === index ? 'rotate-180' : ''} transition-transform`} 
                     viewBox="0 0 20 20" 
                     fill="currentColor"
                   >
@@ -292,8 +478,6 @@ const Pricing = () => {
             ))}
           </div>
         </div>
-
-        
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { MessageCircle, TrendingUp, Users, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Bhero = () => {
   return (
@@ -42,10 +43,10 @@ const Bhero = () => {
               companion, available 24/7.
             </p>
             
-            <button className="inline-flex items-center text-blue-500 hover:text-blue-600 font-medium text-sm transition-colors">
+            <Link to='/chatbot' className="inline-flex items-center text-blue-500 hover:text-blue-600 font-medium text-sm transition-colors">
               Learn More
               <ArrowRight className="ml-1 h-4 w-4" />
-            </button>
+            </Link>
           </div>
 
           {/* Mood Tracking & Insights */}
@@ -61,10 +62,10 @@ const Bhero = () => {
               understand your mental health journey.
             </p>
             
-            <button className="inline-flex items-center text-blue-500 hover:text-blue-600 font-medium text-sm transition-colors">
+            <Link to='/assessment' className="inline-flex items-center text-blue-500 hover:text-blue-600 font-medium text-sm transition-colors">
               Learn More
               <ArrowRight className="ml-1 h-4 w-4" />
-            </button>
+            </Link>
           </div>
 
           {/* Expert Consultations */}
@@ -80,10 +81,10 @@ const Bhero = () => {
               sessions and professional guidance.
             </p>
             
-            <button className="inline-flex items-center text-blue-500 hover:text-blue-600 font-medium text-sm transition-colors">
+            <Link to='/experts'className="inline-flex items-center text-blue-500 hover:text-blue-600 font-medium text-sm transition-colors">
               Learn More
               <ArrowRight className="ml-1 h-4 w-4" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

@@ -38,13 +38,16 @@ import { Link } from 'react-router-dom';
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <button className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-200 transform hover:scale-105">
+              <Link  to='/chatbot' className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-200 transform hover:scale-105">
                 Start Free Chat
-              </button>
+              </Link>
               
               <div className="flex items-center space-x-2 text-gray-700 hover:cursor-pointer">
-                <Phone className="w-5 h-5" />
-                <span className="font-medium">+254 796 871876</span>
+              <a href="tel:+254796871876" className="flex items-center space-x-2 text-gray-700 hover:cursor-pointer">
+  <Phone className="w-5 h-5" />
+  <span className="font-medium">+254 796 871876</span>
+</a>
+
               </div>
             </div>
           </div>

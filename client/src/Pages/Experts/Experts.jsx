@@ -1,9 +1,40 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Experts = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedExpert, setSelectedExpert] = useState(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    sessionType: 'online',
+    date: '',
+    time: '',
+    location: '',
+    notes: '',
+    emergencyContact: '',
+    preferredCommunication: 'video'
+  });
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // Configure axios to include credentials
+  axios.defaults.withCredentials = true;
+
+  // Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/auth/check');
+        if (response.data.authenticated) {
+          setUser(response.data.user);
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      }
+    };
+    
+    checkAuth();
+  }, []);
 
   // Expert data
   const experts = [
@@ -11,106 +42,180 @@ const Experts = () => {
       id: 1,
       name: "Dr. Sarah Johnson",
       title: "Clinical Psychologist",
-      specialty: "Anxiety & Depression",
-      experience: "12 years",
+      specialty: "Anxiety and Depression",
+      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+      rating: 4.9,
+      reviews: 128,
+      experience: "10 years",
+      price: "Kshs120/session",
       education: "PhD in Clinical Psychology, Harvard University",
       approach: "Cognitive Behavioral Therapy (CBT), Mindfulness",
-      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face",
-      rating: 4.9,
-      reviews: 142,
-      price: "Kshs150/session",
       languages: ["English", "Spanish"],
-      availability: "Mon, Wed, Fri",
-      bio: "Specialized in helping adults overcome anxiety and depression through evidence-based approaches. Passionate about empowering clients with practical tools for daily life."
+      availability: "Mon-Fri, 9am-5pm",
+      bio: "Dr. Johnson specializes in treating anxiety and depression using evidence-based approaches. She creates a safe, non-judgmental space for clients to explore their challenges and develop effective coping strategies."
     },
     {
       id: 2,
       name: "Dr. Michael Chen",
-      title: "Psychiatrist",
-      specialty: "Medication Management",
-      experience: "15 years",
-      education: "MD Psychiatry, Johns Hopkins University",
-      approach: "Pharmacotherapy, Integrated Treatment",
-      image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=300&h=300&fit=crop&crop=face",
+      title: "Licensed Therapist",
+      specialty: "Trauma and PTSD",
+      image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
       rating: 4.8,
-      reviews: 89,
-      price: "Kshs200/session",
+      reviews: 96,
+      experience: "8 years",
+      price: "Kshs110/session",
+      education: "MSW, Columbia University",
+      approach: "EMDR, Trauma-Focused CBT",
       languages: ["English", "Mandarin"],
-      availability: "Tue, Thu",
-      bio: "Board-certified psychiatrist with expertise in medication management for mood disorders. Believes in combining medication with therapy for best outcomes."
+      availability: "Tue-Sat, 10am-6pm",
+      bio: "Dr. Chen specializes in trauma recovery and helping clients overcome PTSD. His compassionate approach helps clients process traumatic experiences and rebuild their lives."
     },
     {
       id: 3,
-      name: "Lisa Rodriguez",
-      title: "Licensed Therapist",
-      specialty: "Trauma & PTSD",
-      experience: "8 years",
-      education: "MA in Counseling Psychology, Stanford University",
-      approach: "EMDR, Trauma-Focused CBT",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&crop=face",
-      rating: 4.9,
-      reviews: 117,
-      price: "Kshs120/session",
-      languages: ["English", "Spanish"],
-      availability: "Mon-Fri",
-      bio: "Specializes in trauma recovery and helping clients overcome PTSD. Creates a safe, supportive environment for healing and growth."
+      name: "Dr. Emily Rodriguez",
+      title: "Relationship Counselor",
+      specialty: "Relationship Issues",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+      rating: 4.7,
+      reviews: 142,
+      experience: "12 years",
+      price: "Kshs130/session",
+      education: "PhD in Marriage and Family Therapy, Northwestern University",
+      approach: "Gottman Method, Emotionally Focused Therapy",
+      languages: ["English", "Spanish", "French"],
+      availability: "Mon-Thu, 8am-4pm",
+      bio: "Dr. Rodriguez helps couples and individuals navigate relationship challenges, improve communication, and build stronger connections."
     },
     {
       id: 4,
       name: "Dr. James Wilson",
-      title: "Couples Therapist",
-      specialty: "Relationships & Marriage",
-      experience: "18 years",
-      education: "PhD in Marriage and Family Therapy, NYU",
-      approach: "Gottman Method, Emotionally Focused Therapy",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
-      rating: 4.7,
-      reviews: 203,
-      price: "Kshs180/session",
+      title: "Addiction Specialist",
+      specialty: "Addiction Recovery",
+      image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+      rating: 4.9,
+      reviews: 87,
+      experience: "15 years",
+      price: "Kshs140/session",
+      education: "MD, Johns Hopkins University",
+      approach: "Motivational Interviewing, 12-Step Facilitation",
       languages: ["English"],
-      availability: "Wed, Thu, Sat",
-      bio: "Helps couples improve communication, resolve conflicts, and strengthen their relationships. Over 18 years of experience working with diverse couples."
+      availability: "Mon-Fri, 9am-5pm",
+      bio: "Dr. Wilson specializes in addiction recovery, helping clients overcome substance abuse and develop healthy coping mechanisms for long-term sobriety."
     },
     {
       id: 5,
-      name: "Dr. Amina Patel",
+      name: "Dr. Lisa Thompson",
       title: "Child Psychologist",
-      specialty: "Child & Adolescent Therapy",
-      experience: "10 years",
-      education: "PhD in Child Psychology, UCLA",
-      approach: "Play Therapy, Family Systems",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop&crop=face",
-      rating: 4.9,
-      reviews: 96,
-      price: "Kshs160/session",
-      languages: ["English", "Hindi", "Gujarati"],
-      availability: "Mon, Tue, Thu",
-      bio: "Specializes in working with children and adolescents dealing with anxiety, behavioral issues, and school-related challenges."
+      specialty: "Child and Adolescent Therapy",
+      image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+      rating: 4.8,
+      reviews: 113,
+      experience: "9 years",
+      price: "Kshs125/session",
+      education: "PsyD in Child Psychology, UCLA",
+      approach: "Play Therapy, Family Systems Therapy",
+      languages: ["English", "German"],
+      availability: "Wed-Sun, 10am-6pm",
+      bio: "Dr. Thompson specializes in working with children and adolescents, helping them navigate emotional challenges, behavioral issues, and family dynamics."
     },
     {
       id: 6,
-      name: "Robert Kim",
-      title: "Addiction Specialist",
-      specialty: "Substance Abuse Recovery",
-      experience: "14 years",
-      education: "MA in Clinical Social Work, Columbia University",
-      approach: "Motivational Interviewing, Relapse Prevention",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&crop=face",
-      rating: 4.8,
-      reviews: 134,
-      price: "Kshs140/session",
+      name: "Dr. Robert Kim",
+      title: "Psychiatrist",
+      specialty: "Medication Management",
+      image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+      rating: 4.7,
+      reviews: 91,
+      experience: "11 years",
+      price: "Kshs150/session",
+      education: "MD, Stanford University",
+      approach: "Pharmacotherapy, Psychodynamic Therapy",
       languages: ["English", "Korean"],
-      availability: "Mon-Fri",
-      bio: "Dedicated to helping individuals overcome addiction and maintain long-term recovery. Focuses on building coping skills and resilience."
+      availability: "Mon-Fri, 8am-4pm",
+      bio: "Dr. Kim specializes in psychiatric medication management, working with clients to find the right pharmacological approach to support their mental health journey."
     }
   ];
-
- 
 
   // Filter experts by specialty
   const filteredExperts = activeFilter === 'all' 
     ? experts 
     : experts.filter(expert => expert.specialty.toLowerCase().includes(activeFilter));
+
+  const handleBookingClick = (expert) => {
+    if (!user) {
+      alert('Please log in first to book a session');
+      return;
+    }
+    
+    setSelectedExpert(expert);
+    setShowBookingModal(true);
+    setBookingSuccess(false);
+    // Reset form data
+    setBookingData({
+      sessionType: 'online',
+      date: '',
+      time: '',
+      location: '',
+      notes: '',
+      emergencyContact: '',
+      preferredCommunication: 'video'
+    });
+  };
+
+  const handleBookingChange = (e) => {
+    const { name, value } = e.target;
+    setBookingData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const submitBooking = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/bookings', {
+        expertId: selectedExpert.id,
+        expertName: selectedExpert.name,
+        userId: user.id,
+        userName: user.username,
+        sessionType: bookingData.sessionType,
+        date: bookingData.date,
+        time: bookingData.time,
+        location: bookingData.location,
+        notes: bookingData.notes,
+        emergencyContact: bookingData.emergencyContact,
+        preferredCommunication: bookingData.preferredCommunication,
+        status: 'pending'
+      });
+
+      if (response.data.success) {
+        setBookingSuccess(true);
+      } else {
+        alert('Booking failed: ' + response.data.message);
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert('An error occurred while booking the session');
+    }
+  };
+
+  // Generate time slots for the time select
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 9; hour <= 17; hour++) {
+      for (let min = 0; min < 60; min += 30) {
+        const time = `Kshs{hour.toString().padStart(2, '0')}:Kshs{min.toString().padStart(2, '0')}`;
+        slots.push(<option key={time} value={time}>{time}</option>);
+      }
+    }
+    return slots;
+  };
+
+  // Function to handle assessment quiz
+  const handleAssessmentQuiz = () => {
+    alert('Assessment quiz feature coming soon!');
+    // You can implement navigation to a quiz page here
+    // For example: navigate('/assessment-quiz');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -125,7 +230,6 @@ const Experts = () => {
           </p>
         </div>
 
-       
         {/* Filter Section */}
         <div className="mb-10">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
@@ -205,7 +309,10 @@ const Experts = () => {
                     >
                       View Profile
                     </button>
-                    <button className="flex-1 border border-pink-500 text-pink-500 py-2 rounded-lg hover:bg-pink-50 transition-colors">
+                    <button 
+                      onClick={() => handleBookingClick(expert)}
+                      className="flex-1 border border-pink-500 text-pink-500 py-2 rounded-lg hover:bg-pink-50 transition-colors"
+                    >
                       Book Session
                     </button>
                   </div>
@@ -244,7 +351,7 @@ const Experts = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-pink-500  rounded-2xl p-10 text-white">
+        <div className="text-center bg-pink-500 rounded-2xl p-10 text-white">
           <h2 className="text-3xl font-bold mb-4">Ready to Take the Next Step?</h2>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
             Connect with a mental health expert today and start your journey toward better well-being.
@@ -253,7 +360,10 @@ const Experts = () => {
             <button className="bg-white text-pink-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
               Browse All Experts
             </button>
-            <button className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-pink-600 transition-colors">
+            <button 
+              onClick={handleAssessmentQuiz}
+              className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-pink-600 transition-colors"
+            >
               Take Assessment Quiz
             </button>
           </div>
@@ -321,13 +431,173 @@ const Experts = () => {
               </div>
 
               <div className="mt-8 flex space-x-4">
-                <button className="flex-1 bg-pink-500 text-white py-3 rounded-lg hover:bg-pink-600 transition-colors">
+                <button 
+                  onClick={() => handleBookingClick(selectedExpert)}
+                  className="flex-1 bg-pink-500 text-white py-3 rounded-lg hover:bg-pink-600 transition-colors"
+                >
                   Book a Session
                 </button>
                 <button className="flex-1 border border-pink-500 text-pink-500 py-3 rounded-lg hover:bg-pink-50 transition-colors">
                   Send Message
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booking Modal */}
+      {showBookingModal && selectedExpert && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-screen overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Book a Session with {selectedExpert.name}</h2>
+                <button 
+                  onClick={() => setShowBookingModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+
+              {bookingSuccess ? (
+                <div className="text-center py-8">
+                  <svg className="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <h3 className="text-xl font-semibold mb-2">Booking Confirmed!</h3>
+                  <p className="text-gray-600 mb-6">Your session with {selectedExpert.name} has been scheduled successfully.</p>
+                  <button 
+                    onClick={() => setShowBookingModal(false)}
+                    className="bg-pink-500 text-white px-6 py-2 rounded-lg hover:bg-pink-600"
+                  >
+                    Close
+                  </button>
+                </div>
+              ) : (
+                <form className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Session Type</label>
+                    <div className="flex space-x-4">
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="sessionType"
+                          value="online"
+                          checked={bookingData.sessionType === 'online'}
+                          onChange={handleBookingChange}
+                          className="mr-2"
+                        />
+                        Online
+                      </label>
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="sessionType"
+                          value="physical"
+                          checked={bookingData.sessionType === 'physical'}
+                          onChange={handleBookingChange}
+                          className="mr-2"
+                        />
+                        Physical
+                      </label>
+                    </div>
+                  </div>
+
+                  {bookingData.sessionType === 'physical' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Location/Address</label>
+                      <input
+                        type="text"
+                        name="location"
+                        value={bookingData.location}
+                        onChange={handleBookingChange}
+                        placeholder="Enter your location or preferred meeting address"
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                  )}
+
+                  {bookingData.sessionType === 'online' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Communication</label>
+                      <select
+                        name="preferredCommunication"
+                        value={bookingData.preferredCommunication}
+                        onChange={handleBookingChange}
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                      >
+                        <option value="video">Video Call</option>
+                        <option value="audio">Audio Call</option>
+                        <option value="chat">Chat</option>
+                      </select>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input
+                      type="date"
+                      name="date"
+                      value={bookingData.date}
+                      onChange={handleBookingChange}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                    <select
+                      name="time"
+                      value={bookingData.time}
+                      onChange={handleBookingChange}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Select a time</option>
+                      {generateTimeSlots()}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                    <input
+                      type="text"
+                      name="emergencyContact"
+                      value={bookingData.emergencyContact}
+                      onChange={handleBookingChange}
+                      placeholder="Phone number of someone to contact in case of emergency"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes (Optional)</label>
+                    <textarea
+                      name="notes"
+                      value={bookingData.notes}
+                      onChange={handleBookingChange}
+                      placeholder="Any specific concerns or preferences you'd like to share"
+                      rows="3"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+
+                  <div className="pt-4">
+                    <button
+                      type="button"
+                      onClick={submitBooking}
+                      disabled={!bookingData.date || !bookingData.time}
+                      className="w-full bg-pink-500 text-white py-3 rounded-lg hover:bg-pink-600 disabled:opacity-50"
+                    >
+                      Confirm Booking
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>

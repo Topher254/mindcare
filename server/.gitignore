@@ -2,9 +2,29 @@
 __pycache__/
 *.pyc
 *.pyo
-
-# Virtual environment
+*.pyd
+.Python
+env/
 venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Env files
+# Database
+instance/*.db
+*.sqlite3
+
+# Environment variables
 .env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
