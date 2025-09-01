@@ -24,7 +24,7 @@ const Experts = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/auth/check');
+        const response = await axios.get('https://mindcare.proessayworks.com/api/auth/check');
         if (response.data.authenticated) {
           setUser(response.data.user);
         }
@@ -172,7 +172,7 @@ const Experts = () => {
 
   const submitBooking = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/bookings', {
+      const response = await axios.post('https://mindcare.proessayworks.com/api/bookings', {
         expertId: selectedExpert.id,
         expertName: selectedExpert.name,
         userId: user.id,

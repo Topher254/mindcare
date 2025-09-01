@@ -20,7 +20,7 @@ const Pricing = () => {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get('http://localhost:5000/api/auth/check');
+        const response = await axios.get('https://mindcare.proessayworks.com/api/auth/check');
         if (response.data.authenticated) {
           setUser(response.data.user);
         } else {
@@ -66,7 +66,7 @@ const Pricing = () => {
         : (selectedPlan === 'basic' ? 99.99 : selectedPlan === 'premium' ? 299.99 : 799.99);
 
       // Call backend to initiate payment
-      const response = await axios.post('http://localhost:5000/api/payment/mpesa', {
+      const response = await axios.post('https://mindcare.proessayworks.com/api/payment/mpesa', {
         phoneNumber,
         amount,
         plan: selectedPlan,
@@ -93,13 +93,13 @@ const Pricing = () => {
   const checkPaymentStatus = async (checkoutRequestId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/payment/status/${checkoutRequestId}`
+        `https://mindcare.proessayworks.com/api/payment/status/${checkoutRequestId}`
       );
       
       if (response.data.status === 'Paid') {
         setPaymentStatus('success');
         // Update user subscription status
-        const userResponse = await axios.get('http://localhost:5000/api/auth/check');
+        const userResponse = await axios.get('https://mindcare.proessayworks.com/api/auth/check');
         setUser(userResponse.data.user);
       } else if (response.data.status === 'Failed') {
         setPaymentStatus('failed');
