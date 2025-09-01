@@ -29,7 +29,7 @@ db = SQLAlchemy(app)
 # Configure CORS - updated with more permissive settings
 CORS(app, 
      supports_credentials=True, 
-     origins=[ "http://localhost:5173"],
+     origins=[ "https://mindcare-ashen.vercel.app/"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      expose_headers=["Set-Cookie"])
@@ -102,26 +102,6 @@ class Transaction(db.Model):
     
     user = db.relationship('User', backref=db.backref('transactions', lazy=True))
 
-# CORS helper function
-# @app.after_request
-# def after_request(response):
-#     response.headers.add('Access-Control-Allow-Credentials', 'true')
-#     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-#     response.headers.add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS')
-#     origin = request.headers.get('Origin')
-#     if origin and origin in ['http://localhost:3000', 'http://localhost:5173']:
-#         response.headers.add('Access-Control-Allow-Origin', origin)
-#     return response
-
-# @app.before_request
-# def handle_preflight():
-#     if request.method == "OPTIONS":
-#         response = jsonify()
-#         # response.headers.add("Access-Control-Allow-Origin", request.headers.get('Origin'))
-#         response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-#         response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
-#         response.headers.add("Access-Control-Allow-Credentials", "true")
-#         return response
 
 # Routes
 @app.route('/api/test', methods=['GET'])
