@@ -28,3 +28,6 @@ instance/*.db
 # OS
 .DS_Store
 Thumbs.db
+server.zip
+*.zip
+*.env

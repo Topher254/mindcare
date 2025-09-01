@@ -35,4 +35,7 @@ yarn-error.log*
 
 # Env files
 .env
+server.zip
+*.zip
+*.env
 
