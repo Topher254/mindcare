@@ -210,7 +210,7 @@ app.get("/api/paystack/verify", async (req, res) => {
     }
 
     // data.data.status === 'success' → paid
-    return res.json({ ok: true, status: data.data.status, data: data.data });
+    return res.json({ ok: true, status: data.status, data: data.data });
   } catch (e) {
     return res.status(400).json({ error: e.message || "Verify failed" });
   }
