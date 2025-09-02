@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 
 // ⛳ Force all API calls to the backend on port 3000
-const API_BASE = "";
+const API_BASE = "http://localhost:3000";
 export default function Pricing() {
   const [selectedPlan, setSelectedPlan] = useState("premium");
   const [billingCycle, setBillingCycle] = useState("monthly"); // "monthly" | "yearly"
